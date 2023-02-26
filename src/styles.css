@@ -12,7 +12,7 @@
 
 body{
   font-family: 'Roboto', sans-serif;
-  font-size: 12px;
+  font-size: 14px;
   color: var(--body-text-color);
 }
 
@@ -49,10 +49,13 @@ body{
 input[type = "text"], input[type = "email"]{
   height: 60px;
   padding-left: 30px;
-  font-size: 13px;
+  /* font-size: 13px; */
   width: 100%;
 }
 
+/* .btn{
+  color: white;
+} */
 
 .btn-theme{
   height: 58px;

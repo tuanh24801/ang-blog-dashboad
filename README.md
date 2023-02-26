@@ -30,3 +30,5 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 # OctAcademy: https://www.youtube.com/watch?v=6zv1PTuqIIc
 
 # #2: 4:50:51 / 11:14:51
+
+# #3  5:45:47 / 11:14:51 // Thay thế validate angular 15 
