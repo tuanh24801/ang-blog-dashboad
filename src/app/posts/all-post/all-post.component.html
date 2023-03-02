@@ -39,7 +39,7 @@
                 <td>{{ post.category.categoryId }}</td>
                 <td>{{ post.createdAt.toMillis() | date }}</td>
                 <td>
-                  <button class="btn btn-warning" routerLink = "/posts/new" [queryParams]="{id : post.id}">info</button>
+                  <button class="btn btn-warning" routerLink = "/posts/new" [queryParams]="{id : post.id}">Edit</button>
                 </td>
               </tr>
             </tbody>

@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
-import { Firestore, collectionData, collection, addDoc, doc, updateDoc,FieldPath, deleteDoc,query,where,documentId } from '@angular/fire/firestore';
+import { Firestore, collectionData, collection, addDoc, doc, updateDoc,query,where,documentId, getDocs } from '@angular/fire/firestore';
 import { ToastrService } from 'ngx-toastr';
 import { Post } from '../models/post';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { JsonPipe } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
@@ -19,14 +18,24 @@ export class PostsService {
     private router: Router
     ) { }
 
-  uploadImage(selectedImage:any,postData:Post){
+  uploadImage(selectedImage:any,postData:Post, formStatus?:string, id?:any){
+    console.log(selectedImage + " - " + postData + " - " + formStatus + " - " + id);
     const filePath = `postIMG/${Date.now()}`;
     const ref = this.storage.ref(filePath);
     const task = ref.put(selectedImage);
     task.then( (response) => {
       response.ref.getDownloadURL().then( val => {
         postData.postImgPath = val;
-        this.saveData(postData);
+        console.log(postData);
+
+        if(formStatus === "Add New"){
+          console.log("Save data post services");
+
+          this.saveData(postData);
+        }
+        if(formStatus == "Edit"){
+          this.updateData(id, postData);
+        }
       });
     });
   }
@@ -46,33 +55,49 @@ export class PostsService {
   loadData(){
     const collectionInstance = collection(this.firestore, 'Post');
     collectionData(collectionInstance, {idField :'id'}).subscribe(val => {
-        console.log(val);
+        // console.log(val);
     })
-    return  collectionData(collectionInstance, {idField :'id'});
+    return  collectionData(collectionInstance);
   }
 
   loadOneData(id:any){
     const collectionInstance = collection(this.firestore, 'Post');
-    collectionData(collectionInstance, {idField :'id'}).subscribe(val => {
-        console.log(val);
-    })
-    return  collectionData(collectionInstance, {idField :'id'});
+    let q = query(collectionInstance);
+
+    if (id) {
+      q = query(collectionInstance, where('id', '==', id));
+    }
+    return collectionData(q) as unknown as Observable<Post[]>;
   }
 
-  getPlayer(filter :any) {
+
+
+  async updateData(id: string, Post:Post) {
     const playersRef = collection(this.firestore, 'Post');
-    let q = query(playersRef);
-    if (filter) {
-      q = query(playersRef, where('id', '==', '1677527901331'));
-      console.log( JSON.stringify(documentId()));
+    let q = query(playersRef, where('id', '==', id));
+    const querySnapshot = await getDocs(q);
+    console.log(querySnapshot);
+    querySnapshot.forEach((document) => {
+      const docRef = doc(this.firestore, 'Post', document.id);
+      updateDoc(docRef,
+        {
+          category: {category: Post.category.category, categoryId: Post.category.categoryId},
+          title: Post.title,
+          permalink: Post.permalink,
+          excerpt: Post.excerpt,
+          postImgPath: Post.postImgPath,
+          content: Post.content,
+          isFeatured:Post.isFeatured,
+          views:Post.views,
+          status:Post.status,
+          createdAt:Post.createdAt
+        }
+        ).then(() => {
+          this.toastr.success("Update is success");
+          this.router.navigate([['/posts']]);
 
-    }
-    collectionData(q , {idField :'id'}).subscribe( (val) => {
-      console.log(val);
-
-    })
-
-    return collectionData(q) as unknown as Observable<Post[]>;
+      });
+    });
   }
 
 }

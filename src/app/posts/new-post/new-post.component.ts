@@ -19,6 +19,9 @@ export class NewPostComponent implements OnInit {
   imgSrc:any = '../../../assets/placeholder-image.jpg';
   selectedImg:any;
   categories: Observable<any>;
+  post : Array<Post>;
+  formStatus: string = "Add New";
+  postIdParam:string;
 
   postForm: FormGroup = new FormGroup({
     title: new FormControl(''),
@@ -36,20 +39,37 @@ export class NewPostComponent implements OnInit {
     private route: ActivatedRoute
     ){
 
-
+    //get params (id)
     this.route.queryParams.subscribe(value => {
-      this.postsService.getPlayer(value);
-    })
+      if(value['id']){
+        this.postIdParam = value['id'];
+        this.postsService.loadOneData(value['id']).subscribe( (post)  => {
+          this.post = post;
 
-    this.postForm = this.formBuilder.group({
-      title: ['', [Validators.required, Validators.minLength(10)]],
-      permalink: ['', Validators.required],
-      excerpt: ['',[Validators.required, Validators.minLength(50)]],
-      category: ['',[Validators.required]],
-      postImg: ['',[Validators.required]],
-      content: ['',[Validators.required]]
-    });
-    this.postForm.controls['permalink'].disable();
+          this.postForm = this.formBuilder.group({
+            title: [this.post[0].title, [Validators.required, Validators.minLength(10)]],
+            permalink: [this.post[0].permalink],
+            excerpt: [this.post[0].excerpt,[Validators.required, Validators.minLength(50)]],
+            category: [`${this.post[0].category.category}-${this.post[0].category.categoryId}`,[Validators.required]],
+            postImg: ['',[Validators.required]],
+            content: [this.post[0].content,[Validators.required]]
+          });
+          this.imgSrc = this.post[0].postImgPath;
+          this.formStatus = "Edit";
+        });
+      }else{
+        console.log("NO param");
+
+        this.postForm = this.formBuilder.group({
+          title: ['', [Validators.required, Validators.minLength(10)]],
+          permalink: [''],
+          excerpt: ['',[Validators.required, Validators.minLength(50)]],
+          category: ['',[Validators.required]],
+          postImg: ['',[Validators.required]],
+          content: ['',[Validators.required]]
+        });
+      }
+    })
   }
 
   get f(): { [key: string]: AbstractControl } {
@@ -78,10 +98,9 @@ export class NewPostComponent implements OnInit {
 
 
   onSubmit(){
-    this.postForm.controls['permalink'].enable();
+
     this.postForm.controls['permalink'].setValue(this.permalink);
     const permalink_ = this.postForm.value.permalink;
-    this.postForm.controls['permalink'].disable();
     const category_ = this.postForm.value.category.split('-');
     const postData: Post = {
       id: Date.now().toString(),
@@ -99,7 +118,16 @@ export class NewPostComponent implements OnInit {
       status: "string",
       createdAt: new Date()
     };
-    this.postsService.uploadImage(this.selectedImg,postData);
+    if(this.formStatus == "Edit"){
+      this.postsService.uploadImage(this.selectedImg, postData, this.formStatus, this.postIdParam);
+      console.log("edit on submit");
+
+    }
+
+    if(this.formStatus == "Add New"){
+      console.log("save img active");
+      this.postsService.uploadImage(this.selectedImg,postData, this.formStatus);
+    }
     this.postForm.reset();
     this.imgSrc = '../../../assets/placeholder-image.jpg';
   }
