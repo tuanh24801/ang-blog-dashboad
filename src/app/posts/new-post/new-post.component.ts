@@ -84,7 +84,10 @@ export class NewPostComponent implements OnInit {
     const title = $event.target.value;
     let permalink =  title.replace(/\s/g,'-');
     this.permalink = permalink;
+  }
 
+  permalinkChanged(title:string):string{
+    return  title.replace(/\s/g,'-');
   }
 
   showPreview($event:any):any{
@@ -98,9 +101,7 @@ export class NewPostComponent implements OnInit {
 
 
   onSubmit(){
-
-    this.postForm.controls['permalink'].setValue(this.permalink);
-    const permalink_ = this.postForm.value.permalink;
+    const permalink_ = this.permalinkChanged(this.postForm.value.title);
     const category_ = this.postForm.value.category.split('-');
     const postData: Post = {
       id: Date.now().toString(),
@@ -120,12 +121,9 @@ export class NewPostComponent implements OnInit {
     };
     if(this.formStatus == "Edit"){
       this.postsService.uploadImage(this.selectedImg, postData, this.formStatus, this.postIdParam);
-      console.log("edit on submit");
-
     }
 
     if(this.formStatus == "Add New"){
-      console.log("save img active");
       this.postsService.uploadImage(this.selectedImg,postData, this.formStatus);
     }
     this.postForm.reset();

@@ -23,4 +23,13 @@ export class AllPostComponent implements OnInit{
 
 
   }
+
+  onDelete(postImgPath:any, postId:any){
+    this.postsService.deteteImange(postImgPath,postId);
+  }
+
+  onFeatured(id:string, active:boolean){
+    this.postsService.updatePostFeatured(id,active);
+
+  }
 }

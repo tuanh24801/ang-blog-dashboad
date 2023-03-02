@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
-import { Firestore, collectionData, collection, addDoc, doc, updateDoc,query,where,documentId, getDocs } from '@angular/fire/firestore';
+import { Firestore, collectionData, collection, addDoc, doc, updateDoc,query,where,documentId, getDocs, deleteDoc } from '@angular/fire/firestore';
 import { ToastrService } from 'ngx-toastr';
 import { Post } from '../models/post';
 import { Router } from '@angular/router';
@@ -26,15 +26,13 @@ export class PostsService {
     task.then( (response) => {
       response.ref.getDownloadURL().then( val => {
         postData.postImgPath = val;
-        console.log(postData);
-
         if(formStatus === "Add New"){
-          console.log("Save data post services");
-
+          console.log("Image saved");
           this.saveData(postData);
         }
-        if(formStatus == "Edit"){
+        if(formStatus === "Edit"){
           this.updateData(id, postData);
+          console.log("Image saved Edit");
         }
       });
     });
@@ -97,6 +95,65 @@ export class PostsService {
           this.router.navigate([['/posts']]);
 
       });
+    });
+  }
+
+  async updatePostFeatured(id: string, active:boolean) {
+    const playersRef = collection(this.firestore, 'Post');
+    let q = query(playersRef, where('id', '==', id));
+    const querySnapshot = await getDocs(q);
+    console.log(querySnapshot);
+    querySnapshot.forEach((document) => {
+      const docRef = doc(this.firestore, 'Post', document.id);
+      updateDoc(docRef,
+        {
+          isFeatured:active,
+        }
+        ).then(() => {
+          if(active){
+            this.toastr.success("Post is active featured");
+          }else{
+            this.toastr.warning("Post is remove")
+          }
+
+
+      });
+    });
+  }
+
+
+
+  //delete with file url
+  deteteImange(folderRef:any,id:string){
+
+    this.storage.storage.refFromURL(folderRef).delete().then( () => {
+      this.deleteData(id);
+    });
+
+  }
+
+  async deleteData(id: string) {
+    const playersRef = collection(this.firestore, 'Post');
+    let q = query(playersRef, where('id', '==', id));
+    const querySnapshot = await getDocs(q);
+
+    querySnapshot.forEach(async (document) => {
+      const docRef = doc(this.firestore, 'Post', document.id);
+      deleteDoc(docRef).then( () => {
+        this.toastr.success("Post Deleted");
+        console.log("post is deleted");
+
+      });
+    });
+  }
+
+  //remove with id file
+  removeRequestFiles(requestId: string) {
+    const folderPath = `requests/${requestId}`;
+    const folderRef = this.storage.ref(folderPath);
+
+    folderRef.listAll().subscribe((val) => {
+      val.items.forEach((ref) => ref.delete());
     });
   }
 

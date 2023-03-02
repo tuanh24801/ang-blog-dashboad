@@ -34,3 +34,5 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 # #3  5:45:47 / 11:14:51 // Thay thế validate angular 15 
 
 # # 6:54:08 / 11:14:51 // thêm id vào bảng post => tiện cho việc lấy dữ liệu 1 post
+
+# # 10:02:43 / 11:14:51 (Done Auth, Login Email, passwords) 

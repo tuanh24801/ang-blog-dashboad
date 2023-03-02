@@ -16,6 +16,9 @@ import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFireStorageModule } from '@angular/fire/compat/storage';
 
+//auth
+import { AngularFireAuthModule } from '@angular/fire/compat/auth';
+
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -26,6 +29,7 @@ import { CategoriesComponent } from './categories/categories.component';
 import { AllPostComponent } from './posts/all-post/all-post.component';
 import { NewPostComponent } from './posts/new-post/new-post.component';
 import { NoSanitizePipe } from './Pipes/no-sanitize.pipe';
+import { LoginComponent } from './auth/login/login.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +40,8 @@ import { NoSanitizePipe } from './Pipes/no-sanitize.pipe';
     CategoriesComponent,
     AllPostComponent,
     NewPostComponent,
-    NoSanitizePipe
+    NoSanitizePipe,
+    LoginComponent
 
   ],
   imports: [
@@ -51,9 +56,12 @@ import { NoSanitizePipe } from './Pipes/no-sanitize.pipe';
     HttpClientModule,
     ReactiveFormsModule,
 
+
   //Upload Image
     AngularFireModule.initializeApp(environment.firebase),
-    AngularFireStorageModule
+    AngularFireStorageModule,
+
+    AngularFireAuthModule
 
   ],
   providers: [],
