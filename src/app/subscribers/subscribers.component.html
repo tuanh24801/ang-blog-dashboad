@@ -1,0 +1,41 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card shadow-effect bg-secondary-theme">
+        <div class="card-body text-center">
+          <h3 class="text-theme-primary"> All Subscribers </h3>
+          <p> From here you can manage your Subscribers. </p>
+          <button class="btn btn-sm btn-warning" routerLink="/"> Back to Dashboard </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card shadow-effect">
+        <div class="card-body">
+          <table class="table row-border hover">
+            <thead>
+              <tr>
+                <th width="10"> No </th>
+                <th width="200"> Name </th>
+                <th> Email </th>
+                <th> Send Email </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let sub of allSub | async, let i = index">
+                <td width="10">{{ i+1 }}</td>
+                <td>{{ sub.name }}</td>
+                <td>{{ sub.email }}</td>
+                <td><button class="btn btn-info"><i class="fa-solid fa-paper-plane" [ngStyle]="{'color': 'white'}"></i></button> </td>
+
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
